@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour, IDoorInteractionParent
     //stays here for now, I will change this from a door object to a keycard player object
     //Baiscally a SO that allows me to 
     [SerializeField] private DoorObjectSO doorObjectSO;
+    [SerializeField] private KeyCardSO keycardObjectSO;
   
     //private DoorInteractions doorInteraction;
     //private bool hasKeycard = true;
@@ -75,7 +76,8 @@ public class PlayerController : MonoBehaviour, IDoorInteractionParent
             }
             else if(raycastHit.transform.TryGetComponent(out KeycardObject keycardObject))
             {
-                Debug.Log("Here we are interacting with the keycard system so we need to change a few things");
+                KeycardObject keyCardObject = raycastHit.transform.GetComponent<KeycardObject>();
+                HandleKeycardInteraction(keyCardObject);
             }
             else
             {
@@ -179,5 +181,10 @@ public class PlayerController : MonoBehaviour, IDoorInteractionParent
         {
             Debug.Log("You have not collected the required keycard for this area");
         }
+    }
+
+    private void HandleKeycardInteraction(KeycardObject keycardObject)
+    {
+        keycardObject.HasKeycard();
     }
 }

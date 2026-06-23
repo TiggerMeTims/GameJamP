@@ -6,6 +6,6 @@ public class DoorObjectSO : ScriptableObject
 
     public Transform newTransformPoint;
     public Transform currentTransformPoint;
-    public string doorName;
+    public string requiredCardToOpen;
     public bool canOpen;
 }

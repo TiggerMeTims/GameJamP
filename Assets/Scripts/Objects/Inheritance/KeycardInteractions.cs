@@ -17,6 +17,7 @@ public class KeycardInteractions : MonoBehaviour, IKeycardInterface
     {
         return keycardObjectSO.hasYellowKeycard;
     }
+    
     //for the time being, I am setting this up to pass a string till I think of a better way
     public bool GetKeycard(string keycardType)
     {
