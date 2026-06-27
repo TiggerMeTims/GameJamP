@@ -49,7 +49,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 5876562486782598572}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2015230168957733307}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -108,7 +108,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -137,7 +137,7 @@ Transform:
   m_GameObject: {fileID: 8675481728940693098}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.44174, y: -0, z: 19.01}
+  m_LocalPosition: {x: -230.506, y: 0.0000001525643, z: -49.92857}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -152,6 +152,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4295928635564699835}
     m_Modifications:
+    - target: {fileID: 2557461365883115018, guid: d271ba7f3c081ab77b1613ee23f5cd15, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5581749730988649409, guid: d271ba7f3c081ab77b1613ee23f5cd15, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8296604012854228860, guid: d271ba7f3c081ab77b1613ee23f5cd15, type: 3}
       propertyPath: m_Name
       value: TeleportPoint

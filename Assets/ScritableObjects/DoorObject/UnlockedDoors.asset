@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1cccf1ea0392d082b514f0d525cb418, type: 3}
-  m_Name: FirstDoor
+  m_Name: UnlockedDoors
   m_EditorClassIdentifier: Assembly-CSharp::DoorObjectSO
   newTransformPoint: {fileID: 4295928635564699835, guid: cd8cb6809472929539bbafbc0d623e12, type: 3}
   currentTransformPoint: {fileID: 8898438031876504075, guid: 8af3bc395d1f8ec748e02b24a6192d0a, type: 3}
-  doorName: FirstDoor
+  requiredCardToOpen: None
   canOpen: 1

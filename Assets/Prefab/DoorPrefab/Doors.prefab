@@ -100,7 +100,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 42cb6b7f1bdbb5bafacbfb667df633dc, type: 2}
+  - {fileID: 2100000, guid: 319090c3680b0e7e9beb2248b6412191, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -157,5 +157,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7730dea65b5a72efb9664c685efe89c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoorObject
-  newPlayerPosition: {fileID: 0}
-  doorObjectSO: {fileID: 0}
+  doorObjectSO: {fileID: 11400000, guid: 4d22bba21826118e5b0c6642d226df7c, type: 2}

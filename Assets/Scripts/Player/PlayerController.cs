@@ -72,7 +72,14 @@ public class PlayerController : MonoBehaviour, IDoorInteractionParent
             {
                 doorObject = raycastHit.transform.GetComponent<DoorObject>();
                 Transform movePlayerPoint = doorObject.GetNewPlayerPosition();
-                HandleDoorInteraction(movePlayerPoint);
+                if(doorObject.GetDoorCanOpen())
+                {
+                    HandleDoorInteraction(movePlayerPoint);
+                }
+                else
+                {
+                    PrintDoorLockedMessage();
+                }
             }
             else if(raycastHit.transform.TryGetComponent(out KeycardObject keycardObject))
             {
@@ -186,5 +193,10 @@ public class PlayerController : MonoBehaviour, IDoorInteractionParent
     private void HandleKeycardInteraction(KeycardObject keycardObject)
     {
         keycardObject.HasKeycard();
+    }
+
+    private void PrintDoorLockedMessage()
+    {
+        Debug.Log("Door Cannot Open");
     }
 }
