@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class GameLogic : MonoBehaviour
 {
+    /*
     [SerializeField] private GameObject hiddenObject;
 
     void Start()
@@ -9,4 +10,5 @@ public class GameLogic : MonoBehaviour
         hiddenObject.SetActive(false);
         Debug.Log("We have hidden the game object");
     }
+    */
 }

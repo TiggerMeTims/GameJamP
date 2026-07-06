@@ -1,13 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-public class PlayerController : MonoBehaviour, IDoorInteractionParent
+public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance { get; private set; }
 
     //stays here for now, I will change this from a door object to a keycard player object
     //Baiscally a SO that allows me to 
     [SerializeField] private DoorObjectSO doorObjectSO;
-    [SerializeField] private KeyCardSO keycardObjectSO;
   
     //private DoorInteractions doorInteraction;
     //private bool hasKeycard = true;
@@ -16,6 +15,18 @@ public class PlayerController : MonoBehaviour, IDoorInteractionParent
     //[SerializeField] private Transform testMovement;
     private bool isWalking = false;
     private Vector3 lastInteractionDir;
+
+    private bool hasRedKeycard = false;
+    private bool hasBlueKeycard = false;
+    private bool hasYellowKeycard = false;
+
+    //******************************************************************************************************************\\
+    //Setting these so that I don't have to worry about failed spelling
+    private static string __CHECK_RED_KEYCARD = "RedKeyCard";
+    private static string __CHECK_BLUE_KEYCARD = "BlueKeyCard";
+    private static string __CHECK_YELLOW_KEYCARD = "YellowKeyCard";
+    //******************************************************************************************************************\\
+
     
     private void Awake()
     {
@@ -71,20 +82,14 @@ public class PlayerController : MonoBehaviour, IDoorInteractionParent
             if (raycastHit.transform.TryGetComponent(out DoorObject doorObject))
             {
                 doorObject = raycastHit.transform.GetComponent<DoorObject>();
-                Transform movePlayerPoint = doorObject.GetNewPlayerPosition();
-                if(doorObject.GetDoorCanOpen())
-                {
-                    HandleDoorInteraction(movePlayerPoint);
-                }
-                else
-                {
-                    PrintDoorLockedMessage();
-                }
+                HandleDoorInteraction(doorObject);
             }
             else if(raycastHit.transform.TryGetComponent(out KeycardObject keycardObject))
             {
                 KeycardObject keyCardObject = raycastHit.transform.GetComponent<KeycardObject>();
                 HandleKeycardInteraction(keyCardObject);
+                Debug.Log(hasRedKeycard);
+                //Destroy(keycardObject);
             }
             else
             {
@@ -150,9 +155,9 @@ public class PlayerController : MonoBehaviour, IDoorInteractionParent
         transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotationSpeed);
     }
 
-    public bool IsDoorInteractable()
+    public bool IsDoorInteractable(DoorObject doorObject)
     {
-        if(PlayerHasKeyCard())
+        if(PlayerHasKeyCard(doorObject))
         {
             return true;
         }
@@ -168,21 +173,39 @@ public class PlayerController : MonoBehaviour, IDoorInteractionParent
         transform.position = movePlayer.position;
     }
 
-    public bool PlayerHasKeyCard()
+    public bool PlayerHasKeyCard(DoorObject doorObjectCheck)
     {
-        return doorObjectSO.canOpen;   
+        bool returnValue = false;
+        if(doorObjectCheck.GetRequiredKeycard() == __CHECK_RED_KEYCARD)
+        {
+            returnValue = CheckHasRedKeycard();
+        }
+        if(doorObjectCheck.GetRequiredKeycard() == __CHECK_YELLOW_KEYCARD)
+        {
+            returnValue = CheckHasYellowKeycard();
+        }
+        if(doorObjectCheck.GetRequiredKeycard() == __CHECK_BLUE_KEYCARD)
+        {
+            returnValue = CheckHasBlueKeycard();
+        }
+        if(doorObjectCheck.GetRequiredKeycard() == "None")
+        {
+            returnValue = true;
+        }
+
+        return returnValue;   
     }
     public bool PlayerCollectKeyCard()
     {
         return !doorObjectSO.canOpen;
     }
 
-    private void HandleDoorInteraction(Transform doorMoveLocation)
+    private void HandleDoorInteraction(DoorObject doorMoveLocation)
     {
         //Debug.Log(doorMoveLocation);
-        if(IsDoorInteractable())
+        if(IsDoorInteractable(doorMoveLocation))
         {
-            MovePlayerToNewPosition(doorMoveLocation);
+            MovePlayerToNewPosition(doorMoveLocation.GetNewTransformLocation());
         }
         else
         {
@@ -190,10 +213,39 @@ public class PlayerController : MonoBehaviour, IDoorInteractionParent
         }
     }
 
+    //******************************************************************************************************************\\
+    // *** Keycard code
+
     private void HandleKeycardInteraction(KeycardObject keycardObject)
     {
-        keycardObject.HasKeycard();
+        if(keycardObject.GetKeycardType() == __CHECK_RED_KEYCARD)
+        {
+            hasRedKeycard = !hasRedKeycard;
+        }
+        if(keycardObject.GetKeycardType() == __CHECK_BLUE_KEYCARD)
+        {
+            hasBlueKeycard = !hasBlueKeycard;
+        }
+        if(keycardObject.GetKeycardType() == __CHECK_YELLOW_KEYCARD)
+        {
+            hasYellowKeycard = !hasYellowKeycard;
+        }
     }
+
+    private bool CheckHasRedKeycard()
+    {
+        return hasRedKeycard;
+    }
+    private bool CheckHasBlueKeycard()
+    {
+        return hasBlueKeycard;
+    }
+    private bool CheckHasYellowKeycard()
+    {
+        return hasYellowKeycard;
+    }
+
+    //******************************************************************************************************************\\
 
     private void PrintDoorLockedMessage()
     {

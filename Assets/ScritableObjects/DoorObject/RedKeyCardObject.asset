@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1cccf1ea0392d082b514f0d525cb418, type: 3}
+  m_Name: RedKeyCardObject
+  m_EditorClassIdentifier: Assembly-CSharp::DoorObjectSO
+  newTransformPoint: {fileID: 5668537260367230697, guid: 56313985081cc0ab8a57de39434e8a50, type: 3}
+  currentTransformPoint: {fileID: 2594947454569516876, guid: b1204c3e1169e597088e0676e3354aac, type: 3}
+  requiredCardToOpen: RedKeyCard
+  canOpen: 0

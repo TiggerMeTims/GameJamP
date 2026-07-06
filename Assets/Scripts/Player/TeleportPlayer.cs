@@ -14,6 +14,5 @@ public class TeleportPlayer : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         _TeleportPlayerToLocation(other.transform);
-        Debug.Log(other.transform.position);
     }
 }

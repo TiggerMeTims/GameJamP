@@ -6,4 +6,7 @@ public interface IDoorInteractionParent
     public void MovePlayerToNewPosition(Transform playerNewLocation);
     public bool PlayerHasKeyCard();
     public bool PlayerCollectKeyCard();
+    public string GetRequiredKeycard();
+    public Transform GetCurrentTransformLocation();
+    public Transform GetNewTransformLocation();
 }
