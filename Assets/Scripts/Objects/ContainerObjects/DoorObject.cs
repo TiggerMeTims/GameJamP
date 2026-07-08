@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class DoorObject : DoorInteractions
 {
-    //[SerializeField] private DoorObjectSO doorObjectSO;
+    [SerializeField] private Transform doorOpenLocation; 
+    //private Transform doorOffset = new Vector3 (0, 0, 1);
     public void Interaction(PlayerController player)
     {
         Debug.Log("Testing to see if this works");
@@ -20,10 +21,8 @@ public class DoorObject : DoorInteractions
         return doorObjectSO.canOpen;
     }
 
-    /*
-    public string GetDoorRequiredKeys()
+    public Transform DoorOpenLocation()
     {
-        return
+        return doorOpenLocation;
     }
-    */
 }

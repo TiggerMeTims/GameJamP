@@ -73,10 +73,11 @@ public class PlayerController : MonoBehaviour
             lastInteractionDir = moveDirection;
         }
 
-        float interactionDistance = 2f;
+        float interactionDistance = 5f;
 
         if (Physics.Raycast(transform.position, lastInteractionDir, out RaycastHit raycastHit, interactionDistance))
         {
+            Debug.DrawRay(transform.position, lastInteractionDir);
             //These 2 if else statements are just teporary while I setup proper scripts, basically I will setup scriptable objects for both
             //The door and the keycard and the 'Transform' that we have here will be changed from 'Transform' to the scriptable object
             if (raycastHit.transform.TryGetComponent(out DoorObject doorObject))
@@ -178,6 +179,7 @@ public class PlayerController : MonoBehaviour
         bool returnValue = false;
         if(doorObjectCheck.GetRequiredKeycard() == __CHECK_RED_KEYCARD)
         {
+            Debug.Log("In this for loop");
             returnValue = CheckHasRedKeycard();
         }
         if(doorObjectCheck.GetRequiredKeycard() == __CHECK_YELLOW_KEYCARD)
@@ -205,7 +207,7 @@ public class PlayerController : MonoBehaviour
         //Debug.Log(doorMoveLocation);
         if(IsDoorInteractable(doorMoveLocation))
         {
-            MovePlayerToNewPosition(doorMoveLocation.GetNewTransformLocation());
+            MovePlayerToNewPosition(doorMoveLocation.DoorOpenLocation());
         }
         else
         {
