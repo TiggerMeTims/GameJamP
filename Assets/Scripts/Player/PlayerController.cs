@@ -1,45 +1,69 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
+using System.IO;
+using TMPro;
+using UnityEditor;
+using UnityEngine.Assertions.Must;
+
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance { get; private set; }
 
-    //stays here for now, I will change this from a door object to a keycard player object
-    //Baiscally a SO that allows me to 
     [SerializeField] private DoorObjectSO doorObjectSO;
-  
-    //private DoorInteractions doorInteraction;
-    //private bool hasKeycard = true;
     [SerializeField] private float moveSpeed = 5.0f;
     [SerializeField] private GameInput gameInput;
-    //[SerializeField] private Transform testMovement;
+    [SerializeField] private Camera playerCamera;
+
+    [Header("Insanity")]
+    [SerializeField] private float maxInsanity = 100f;
+    private float currentInsanity;
+
     private bool isWalking = false;
-    private Vector3 lastInteractionDir;
+    private bool isTeleporting = false;
+
+    private float interactionCooldown = 0f;
 
     private bool hasRedKeycard = false;
     private bool hasBlueKeycard = false;
     private bool hasYellowKeycard = false;
 
-    //******************************************************************************************************************\\
-    //Setting these so that I don't have to worry about failed spelling
     private static string __CHECK_RED_KEYCARD = "RedKeyCard";
     private static string __CHECK_BLUE_KEYCARD = "BlueKeyCard";
     private static string __CHECK_YELLOW_KEYCARD = "YellowKeyCard";
-    //******************************************************************************************************************\\
 
+    /// <summary>
+    /// Canvas time
+    /// </summary>
     
+    [SerializeField] private TMP_Text canvasText;
+    [SerializeField] private GameObject canvas;
+    //-----------------------------------------------------------------------------------------------------------------------\\
+    private Note notes;
+
     private void Awake()
     {
-        if(Instance != null)
+        if (Instance != null)
         {
-            Debug.Log("There is more then one player instance");
+            Debug.Log("There is more than one player instance");
         }
+
         Instance = this;
+        currentInsanity = maxInsanity;
     }
 
     private void Start()
     {
+        currentInsanity = maxInsanity;
         gameInput.OnInteractionHandler += GameInput_OnInteractionHandler;
+
+        //GameScript Call
+        TextAsset jsonFile = Resources.Load<TextAsset>("GameScript");
+
+        notes = JsonUtility.FromJson<Note>(jsonFile.text);
+
+        Debug.Log(notes.Notes[0].ContainsLine1);
+
     }
 
     private void GameInput_OnInteractionHandler(object sender, System.EventArgs e)
@@ -49,8 +73,12 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (interactionCooldown > 0)
+        {
+            interactionCooldown -= Time.deltaTime;
+        }
+
         HandleMovement();
-        //HandleInteractions();
     }
 
     public bool IsWalking()
@@ -58,199 +86,257 @@ public class PlayerController : MonoBehaviour
         return isWalking;
     }
 
-    private void HandleForwardMovement()
-    {
-        transform.position += Vector3.forward.normalized;
-    }
-
-    private void HandleInteractions()
-    {
-        Vector2 inputVector = gameInput.GetMovementVectorNormalized();
-        Vector3 moveDirection = new Vector3(inputVector.x, 0, inputVector.y);
-
-        if(moveDirection != Vector3.zero)
-        {
-            lastInteractionDir = moveDirection;
-        }
-
-        float interactionDistance = 5f;
-
-        if (Physics.Raycast(transform.position, lastInteractionDir, out RaycastHit raycastHit, interactionDistance))
-        {
-            Debug.DrawRay(transform.position, lastInteractionDir);
-            //These 2 if else statements are just teporary while I setup proper scripts, basically I will setup scriptable objects for both
-            //The door and the keycard and the 'Transform' that we have here will be changed from 'Transform' to the scriptable object
-            if (raycastHit.transform.TryGetComponent(out DoorObject doorObject))
-            {
-                doorObject = raycastHit.transform.GetComponent<DoorObject>();
-                HandleDoorInteraction(doorObject);
-            }
-            else if(raycastHit.transform.TryGetComponent(out KeycardObject keycardObject))
-            {
-                KeycardObject keyCardObject = raycastHit.transform.GetComponent<KeycardObject>();
-                HandleKeycardInteraction(keyCardObject);
-                Debug.Log(hasRedKeycard);
-                //Destroy(keycardObject);
-            }
-            else
-            {
-                Debug.Log("Unable to interact with object, please try again");
-            }
-        }
-    }
-
     private void HandleMovement()
     {
+        if (isTeleporting)
+            return;
+
+        if (interactionCooldown > 0)
+            return;
+
         Vector2 inputVector = gameInput.GetMovementVectorNormalized();
 
-        Vector3 moveDirection = new Vector3(inputVector.x, 0, inputVector.y); 
-        
-        //new Vector3(inputVector.x, 0f, inputVector.y);
+        Vector3 moveDirection = new Vector3(
+            inputVector.x,
+            0,
+            inputVector.y
+        );
 
         float moveDistance = moveSpeed * Time.deltaTime;
+
         float playerRadius = 0.7f;
         float playerHeight = 2f;
 
-        bool canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirection, moveDistance);
+        bool canMove = !Physics.CapsuleCast(
+            transform.position,
+            transform.position + Vector3.up * playerHeight,
+            playerRadius,
+            moveDirection,
+            moveDistance
+        );
 
-        if(!canMove)
+        if (!canMove)
         {
-            //attempt to move on the X movement
-            Vector3 moveDirX = Vector3.forward.normalized;
-            //Range captured for a distance
-            canMove = (moveDirection.x < -0.5f || moveDirection.x > +0.5f) && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirX, moveDistance);
+            Vector3 moveDirX = new Vector3(moveDirection.x, 0, 0).normalized;
 
-            if(canMove)
+            bool canMoveX =
+                moveDirection.x != 0 &&
+                !Physics.CapsuleCast(
+                    transform.position,
+                    transform.position + Vector3.up * playerHeight,
+                    playerRadius,
+                    moveDirX,
+                    moveDistance
+                );
+
+            if (canMoveX)
             {
-                //Can move on the X
                 moveDirection = moveDirX;
             }
-            
             else
             {
-                //Cannot move only on the X
-
-                //attempt a Z move only
                 Vector3 moveDirZ = new Vector3(0, 0, moveDirection.z).normalized;
 
-                //This range caputres for distance
-                canMove = (moveDirection.z < 0.5f || moveDirection.z > +0.5f) && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirZ, moveDistance);
+                bool canMoveZ =
+                    moveDirection.z != 0 &&
+                    !Physics.CapsuleCast(
+                        transform.position,
+                        transform.position + Vector3.up * playerHeight,
+                        playerRadius,
+                        moveDirZ,
+                        moveDistance
+                    );
 
-                if(canMove)
+                if (canMoveZ)
                 {
                     moveDirection = moveDirZ;
                 }
-                
+                else
+                {
+                    moveDirection = Vector3.zero;
+                }
             }
         }
 
-        if(canMove)
+        if (moveDirection != Vector3.zero)
         {
             transform.position += moveDirection * moveDistance;
         }
 
         isWalking = moveDirection != Vector3.zero;
 
-        float rotationSpeed = 10.0f;
+        if (moveDirection != Vector3.zero)
+        {
+            float rotationSpeed = 10f;
 
-        transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotationSpeed);
+            transform.forward = Vector3.Slerp(
+                transform.forward,
+                moveDirection,
+                Time.deltaTime * rotationSpeed
+            );
+        }
     }
 
-    public bool IsDoorInteractable(DoorObject doorObject)
+    private void HandleInteractions()
     {
-        if(PlayerHasKeyCard(doorObject))
+        float interactionDistance = 5f;
+
+        Vector3 rayOrigin = playerCamera != null
+            ? playerCamera.transform.position
+            : transform.position;
+
+        Vector3 rayDirection = playerCamera != null
+            ? playerCamera.transform.forward
+            : transform.forward;
+
+        Debug.DrawRay(
+            rayOrigin,
+            rayDirection * interactionDistance,
+            Color.red,
+            5f
+        );
+
+        if (Physics.Raycast(
+            rayOrigin,
+            rayDirection,
+            out RaycastHit raycastHit,
+            interactionDistance))
         {
-            return true;
-        }
-        else
-        {
-            return false;
+            Debug.Log("Ray hit: " + raycastHit.collider.name);
+
+            DoorObject doorObject =
+                raycastHit.collider.GetComponentInParent<DoorObject>();
+
+            if (doorObject != null)
+            {
+                //Debug.Log("called");
+                interactionCooldown = 0.25f;
+                doorObject.Interaction(this);
+                return;
+            }
+
+            KeycardObject keycardObject =
+                raycastHit.transform.GetComponentInParent<KeycardObject>();
+
+            if (keycardObject != null)
+            {
+                HandleKeycardInteraction(keycardObject);
+                return;
+            }
+
+            
+            NoteObject noteObject = 
+                raycastHit.transform.GetComponentInParent<NoteObject>();
+
+            if(noteObject != null)
+            {
+                HandleNoteInteractions(noteObject);
+                return;
+            }
+            
         }
     }
 
     public void MovePlayerToNewPosition(Transform movePlayer)
     {
-        //Debug.Log(movePlayer.position);
+        StartCoroutine(TeleportPlayer(movePlayer));
+    }
+
+    private IEnumerator TeleportPlayer(Transform movePlayer)
+    {
+        isTeleporting = true;
+
         transform.position = movePlayer.position;
+        transform.rotation = movePlayer.rotation;
+
+        Physics.SyncTransforms();
+
+        yield return null;
+        yield return null;
+
+        isTeleporting = false;
+    }
+
+    public bool IsDoorInteractable(DoorObject doorObjectCheck)
+    {
+        return PlayerHasKeyCard(doorObjectCheck);
     }
 
     public bool PlayerHasKeyCard(DoorObject doorObjectCheck)
     {
-        bool returnValue = false;
-        if(doorObjectCheck.GetRequiredKeycard() == __CHECK_RED_KEYCARD)
-        {
-            Debug.Log("In this for loop");
-            returnValue = CheckHasRedKeycard();
-        }
-        if(doorObjectCheck.GetRequiredKeycard() == __CHECK_YELLOW_KEYCARD)
-        {
-            returnValue = CheckHasYellowKeycard();
-        }
-        if(doorObjectCheck.GetRequiredKeycard() == __CHECK_BLUE_KEYCARD)
-        {
-            returnValue = CheckHasBlueKeycard();
-        }
-        if(doorObjectCheck.GetRequiredKeycard() == "None")
-        {
-            returnValue = true;
-        }
+        if (doorObjectCheck.GetRequiredKeycard() == __CHECK_RED_KEYCARD)
+            return hasRedKeycard;
 
-        return returnValue;   
-    }
-    public bool PlayerCollectKeyCard()
-    {
-        return !doorObjectSO.canOpen;
-    }
+        if (doorObjectCheck.GetRequiredKeycard() == __CHECK_BLUE_KEYCARD)
+            return hasBlueKeycard;
 
-    private void HandleDoorInteraction(DoorObject doorMoveLocation)
-    {
-        //Debug.Log(doorMoveLocation);
-        if(IsDoorInteractable(doorMoveLocation))
-        {
-            MovePlayerToNewPosition(doorMoveLocation.DoorOpenLocation());
-        }
-        else
-        {
-            Debug.Log("You have not collected the required keycard for this area");
-        }
-    }
+        if (doorObjectCheck.GetRequiredKeycard() == __CHECK_YELLOW_KEYCARD)
+            return hasYellowKeycard;
 
-    //******************************************************************************************************************\\
-    // *** Keycard code
+        if (doorObjectCheck.GetRequiredKeycard() == "None")
+            return true;
+
+        return false;
+    }
 
     private void HandleKeycardInteraction(KeycardObject keycardObject)
     {
-        if(keycardObject.GetKeycardType() == __CHECK_RED_KEYCARD)
+        if (keycardObject.GetKeycardType() == __CHECK_RED_KEYCARD)
+            hasRedKeycard = true;
+
+        if (keycardObject.GetKeycardType() == __CHECK_BLUE_KEYCARD)
+            hasBlueKeycard = true;
+
+        if (keycardObject.GetKeycardType() == __CHECK_YELLOW_KEYCARD)
+            hasYellowKeycard = true;
+    }
+
+    private void HandleNoteInteractions(NoteObject noteObject)
+    {
+        if(notes.Notes[noteObject.GetNoteType()] != null)
         {
-            hasRedKeycard = !hasRedKeycard;
-        }
-        if(keycardObject.GetKeycardType() == __CHECK_BLUE_KEYCARD)
-        {
-            hasBlueKeycard = !hasBlueKeycard;
-        }
-        if(keycardObject.GetKeycardType() == __CHECK_YELLOW_KEYCARD)
-        {
-            hasYellowKeycard = !hasYellowKeycard;
+            if(canvas.activeInHierarchy)
+            {
+                canvas.SetActive(false);
+                Time.timeScale = 1f;
+                return;
+            }
+            canvas.SetActive(true);
+            canvasText.text = notes.Notes[noteObject.GetNoteType()].ContainsLine1 + "\n" +  notes.Notes[noteObject.GetNoteType()].ContainsLine2 + "\n" +  notes.Notes[noteObject.GetNoteType()].ContainsLine3;
+            Time.timeScale = 0f;
         }
     }
 
-    private bool CheckHasRedKeycard()
+    public void TakeDamage(float damage)
     {
-        return hasRedKeycard;
-    }
-    private bool CheckHasBlueKeycard()
-    {
-        return hasBlueKeycard;
-    }
-    private bool CheckHasYellowKeycard()
-    {
-        return hasYellowKeycard;
+        currentInsanity -= damage;
+        currentInsanity = Mathf.Clamp(currentInsanity, 0f, maxInsanity);
+
+        Debug.Log("Insanity: " + currentInsanity);
+
+        if (currentInsanity <= 0)
+        {
+            Die();
+        }
     }
 
-    //******************************************************************************************************************\\
-
-    private void PrintDoorLockedMessage()
+    private void Die()
     {
-        Debug.Log("Door Cannot Open");
+        Debug.Log("Player Died");
+
+        // Disable movement
+        enabled = false;
+
+        GameOverUI.Instance.GameOver();
+    }
+
+    public float GetInsanity()
+    {
+        return currentInsanity;
+    }
+
+    public float GetInsanityPercent()
+    {
+        return currentInsanity / maxInsanity;
     }
 }

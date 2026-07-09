@@ -2,18 +2,20 @@ using UnityEngine;
 
 public class DoorObject : DoorInteractions
 {
-    [SerializeField] private Transform doorOpenLocation; 
-    //private Transform doorOffset = new Vector3 (0, 0, 1);
-    public void Interaction(PlayerController player)
-    {
-        Debug.Log("Testing to see if this works");
-    }
+    [SerializeField] private Transform doorOpenLocation;
 
-    //This is created to make sure that all data is being passed accordingly
-    public string TestFunctionPassing()
+    public override void Interaction(PlayerController player)
     {
-        Debug.Log(doorObjectSO.newTransformPoint);
-        return "Test";
+        Debug.Log("Door interaction called");
+
+        if (player.IsDoorInteractable(this))
+        {
+            player.MovePlayerToNewPosition(doorOpenLocation);
+        }
+        else
+        {
+            Debug.Log("You have not collected the required keycard for this area");
+        }
     }
 
     public bool GetDoorCanOpen()

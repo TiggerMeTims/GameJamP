@@ -5,25 +5,29 @@ using UnityEngine.AI;
 public class HunterAI : MonoBehaviour
 {
     [Header("References")]
-    public Transform player;
+    [SerializeField] private Transform player;
 
     [Header("Detection")]
-    public float detectionRange = 15f;
+    [SerializeField] private float detectionRange = 15f;
+
+    [Header("Damage")]
+    [SerializeField] private float minDamagePerSecond = 2f;
+    [SerializeField] private float maxDamagePerSecond = 20f;
 
     [Header("Wandering")]
-    public float wanderRadius = 10f;
-    public float wanderDelay = 4f;
+    [SerializeField] private float wanderRadius = 10f;
+    [SerializeField] private float wanderDelay = 4f;
 
     private NavMeshAgent agent;
     private float wanderTimer;
 
     void Start()
     {
-    agent = GetComponent<NavMeshAgent>();
-    wanderTimer = wanderDelay;
+        agent = GetComponent<NavMeshAgent>();
+        wanderTimer = wanderDelay;
 
-    Debug.Log("Agent enabled: " + agent.enabled);
-    Debug.Log("Is on NavMesh: " + agent.isOnNavMesh);
+        Debug.Log("Agent enabled: " + agent.enabled);
+        Debug.Log("Is on NavMesh: " + agent.isOnNavMesh);
     }
 
     void Update()
@@ -37,10 +41,29 @@ public class HunterAI : MonoBehaviour
         {
             // Chase player
             agent.SetDestination(player.position);
+
+            // Damage player
+            PlayerController playerController = player.GetComponent<PlayerController>();
+
+            if (playerController != null)
+            {
+                // 0 = edge of range, 1 = touching hunter
+                float closeness = 1f - (distance / detectionRange);
+
+                // Makes damage increase much faster when close
+                closeness = Mathf.Pow(closeness, 2f);
+
+                float damagePerSecond = Mathf.Lerp(
+                    minDamagePerSecond,
+                    maxDamagePerSecond,
+                    closeness
+                );
+
+                playerController.TakeDamage(damagePerSecond * Time.deltaTime);
+            }
         }
         else
         {
-            // Wander
             wanderTimer += Time.deltaTime;
 
             if (wanderTimer >= wanderDelay)

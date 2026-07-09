@@ -1,0 +1,27 @@
+{
+    "Notes" : 
+    [
+        {
+            "id": 1,
+            "ContainsLine1": "They checked in another patient today, this is the third they put under my care this month.",
+            "ContainsLine2": "The last two have recovered well, but this one seems off, I can't exactly state what it is, but",
+            "ContainsLine3": "I feel he will be here for a prolonged session"
+        },
+
+        {
+            "id": 2,
+            "ContainsLine1": "He has been here for a month now, but he has made no signs of improvment.", 
+            "ContainsLine2": "The delusions that he has shown are far worse then I could have imagined.",
+            "ContainsLine3": "Any time we attempt to break these delusions, he breaks into violent outpurst"
+        },
+
+        {
+            "id": 3,
+            "ContainsLine1": "We can't keep him here, he believes he's one of the staff.", 
+            "ContainsLine2": "When anyone trys to bring him back to his room, he breaks into a violent outpurst",
+            "ContainsLine3": "I'm worried what will happen if he stays here... we might need to performed the surgery soon"
+        }
+
+    ]
+    
+}

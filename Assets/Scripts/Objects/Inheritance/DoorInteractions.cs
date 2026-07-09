@@ -1,9 +1,9 @@
 using UnityEngine;
 
-
 public class DoorInteractions : MonoBehaviour, IDoorInteractionParent
 {
     public DoorObjectSO doorObjectSO;
+
     private bool canInteract = true;
     private bool playerHasKeyCardObject = false;
 
@@ -12,9 +12,9 @@ public class DoorInteractions : MonoBehaviour, IDoorInteractionParent
         return canInteract;
     }
 
-    public void MovePlayerToNewPosition(Transform playerNewLocation)
+    public virtual void Interaction(PlayerController player)
     {
-        Debug.Log("Script has been called to move the player to a new location");
+        Debug.Log("Default interaction");
     }
 
     public bool PlayerHasKeyCard()
@@ -34,7 +34,7 @@ public class DoorInteractions : MonoBehaviour, IDoorInteractionParent
 
     public Transform GetCurrentTransformLocation()
     {
-        return doorObjectSO.currentTransformPoint;    
+        return doorObjectSO.currentTransformPoint;
     }
 
     public Transform GetNewTransformLocation()
