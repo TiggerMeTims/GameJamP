@@ -5,6 +5,7 @@ using System.IO;
 using TMPro;
 using UnityEditor;
 using UnityEngine.Assertions.Must;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -297,6 +298,11 @@ public class PlayerController : MonoBehaviour
         {
             if(canvas.activeInHierarchy)
             {
+                if (noteObject.GetNoteType() == 3)
+                {
+                    Time.timeScale = 1f;
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                }
                 canvas.SetActive(false);
                 Time.timeScale = 1f;
                 return;

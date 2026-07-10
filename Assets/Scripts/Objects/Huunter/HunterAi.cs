@@ -21,6 +21,12 @@ public class HunterAI : MonoBehaviour
     private NavMeshAgent agent;
     private float wanderTimer;
 
+
+    [Header("Audio")]
+    [SerializeField] private PlayAudio audioController;
+    [SerializeField] private AudioClip audioClipChase;
+    [SerializeField] private AudioClip audioClipWander;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -47,6 +53,9 @@ public class HunterAI : MonoBehaviour
 
             if (playerController != null)
             {
+                audioController.StopAudioSource();
+                audioController.audioFile = audioClipChase;
+                audioController.PlayAudioFile();
                 // 0 = edge of range, 1 = touching hunter
                 float closeness = 1f - (distance / detectionRange);
 
@@ -64,6 +73,13 @@ public class HunterAI : MonoBehaviour
         }
         else
         {
+            /*
+            if(!audioController.GetAudioSource().isPlaying)
+            {
+                audioController.audioFile = audioClipWander;
+                audioController.PlayAudioFile();
+            }
+            */
             wanderTimer += Time.deltaTime;
 
             if (wanderTimer >= wanderDelay)

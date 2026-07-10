@@ -20,6 +20,13 @@
             "ContainsLine1": "We can't keep him here, he believes he's one of the staff.", 
             "ContainsLine2": "When anyone trys to bring him back to his room, he breaks into a violent outpurst",
             "ContainsLine3": "I'm worried what will happen if he stays here... we might need to performed the surgery soon"
+        },
+
+        {
+            "id": 4,
+            "ContainsLine1": "Cannot let him out, all doors within the facility have been locked, the keys hidden.", 
+            "ContainsLine2": "If this mesure fails, the main exits for the facility have been sealed.",
+            "ContainsLine3": "For any left inside, I am sorry there was nothing more we could have done"
         }
 
     ]
