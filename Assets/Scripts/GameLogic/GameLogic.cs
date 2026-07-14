@@ -2,13 +2,29 @@ using UnityEngine;
 
 public class GameLogic : MonoBehaviour
 {
-    /*
-    [SerializeField] private GameObject hiddenObject;
+    
+    [SerializeField] private GameObject thirdPersonPlayer;
+    [SerializeField] private GameObject sanityMeter;
+    [SerializeField] private GameObject firstPersonPlayer;
 
-    void Start()
+
+    public void ActivateThirdPersonCamera()
     {
-        hiddenObject.SetActive(false);
-        Debug.Log("We have hidden the game object");
+        if(firstPersonPlayer.activeSelf)
+        {
+            thirdPersonPlayer.SetActive(true);
+            sanityMeter.SetActive(true);
+            firstPersonPlayer.SetActive(false);
+        }
     }
-    */
+    
+    public void ActivateFirstPersonCamera()
+    {
+        if(thirdPersonPlayer.activeSelf && sanityMeter.activeSelf)
+        {
+            thirdPersonPlayer.SetActive(false);
+            sanityMeter.SetActive(false);
+            firstPersonPlayer.SetActive(true);   
+        }
+    }
 }

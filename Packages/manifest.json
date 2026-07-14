@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.tripolygon.umodeler-x": "file:/home/tadhg/Documents/GitCommits/Games/GameJam/GameJamP/UModelerXPackages/com.tripolygon.umodeler-x-1.2.1+f3.tgz",
     "com.unity.ai.navigation": "2.0.11",
     "com.unity.collab-proxy": "2.11.4",
     "com.unity.ide.rider": "3.0.39",

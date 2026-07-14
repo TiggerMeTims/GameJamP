@@ -38,4 +38,9 @@ public class GameInput : MonoBehaviour
 
         return inputVector;
     }
+
+    public Vector2 GetLookVector()
+    {
+        return playerInputActions.Player.Look.ReadValue<Vector2>();
+    }
 }
