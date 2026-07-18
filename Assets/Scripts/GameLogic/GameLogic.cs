@@ -27,4 +27,9 @@ public class GameLogic : MonoBehaviour
             firstPersonPlayer.SetActive(true);   
         }
     }
+
+    public void ActivateWheelchairHunter(bool keyCard)
+    {
+        
+    }
 }

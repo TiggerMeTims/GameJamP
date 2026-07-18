@@ -34,6 +34,7 @@ public class HunterAI : MonoBehaviour
 
         Debug.Log("Agent enabled: " + agent.enabled);
         Debug.Log("Is on NavMesh: " + agent.isOnNavMesh);
+        Debug.Log("Path Status: " + agent.pathStatus);
     }
 
     void Update()

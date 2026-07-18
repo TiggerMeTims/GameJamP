@@ -11,9 +11,8 @@ public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance { get; private set; }
 
-    [SerializeField] private DoorObjectSO doorObjectSO;
     [SerializeField] private float moveSpeed = 5.0f;
-    [SerializeField] private GameInput gameInput;
+    [SerializeField] private gameInput gameInput;
     [SerializeField] private Camera playerCamera;
 
     [Header("Insanity")]
@@ -63,7 +62,7 @@ public class PlayerController : MonoBehaviour
 
         notes = JsonUtility.FromJson<Note>(jsonFile.text);
 
-        Debug.Log(notes.Notes[0].ContainsLine1);
+        //Debug.Log(notes.Notes[0].ContainsLine1);
 
     }
 
@@ -182,12 +181,12 @@ public class PlayerController : MonoBehaviour
     {
         float interactionDistance = 5f;
 
-        Vector3 rayOrigin = playerCamera != null
-            ? playerCamera.transform.position
+        Vector3 rayOrigin = this != null
+            ? this.transform.position
             : transform.position;
 
-        Vector3 rayDirection = playerCamera != null
-            ? playerCamera.transform.forward
+        Vector3 rayDirection = this != null
+            ? this.transform.forward
             : transform.forward;
 
         Debug.DrawRay(
@@ -196,6 +195,8 @@ public class PlayerController : MonoBehaviour
             Color.red,
             5f
         );
+
+        Debug.Log(rayDirection);
 
         if (Physics.Raycast(
             rayOrigin,
@@ -206,7 +207,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Ray hit: " + raycastHit.collider.name);
 
             DoorObject doorObject =
-                raycastHit.collider.GetComponentInParent<DoorObject>();
+                raycastHit.collider.GetComponent<DoorObject>();
 
             if (doorObject != null)
             {

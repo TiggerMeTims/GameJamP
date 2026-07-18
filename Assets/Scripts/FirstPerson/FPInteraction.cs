@@ -6,6 +6,7 @@ public class FPInteraction : MonoBehaviour
 {
     [SerializeField] private Camera playerCamera;
     [SerializeField] private float interactionDistance = 3f;
+    [SerializeField] private gameInput gameInput;
 
     [Header("UI")]
     [SerializeField] private TMP_Text canvasText;
@@ -17,7 +18,7 @@ public class FPInteraction : MonoBehaviour
 
     private void Start()
     {
-        GameInput.Instance.OnInteractionHandler += GameInput_OnInteractionHandler;
+        gameInput.OnInteractionHandler += GameInput_OnInteractionHandler;
 
         TextAsset jsonFile = Resources.Load<TextAsset>("GameScript");
         notes = JsonUtility.FromJson<Note>(jsonFile.text);
@@ -25,20 +26,20 @@ public class FPInteraction : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (GameInput.Instance != null)
-            GameInput.Instance.OnInteractionHandler -= GameInput_OnInteractionHandler;
+        if (gameInput != null)
+            gameInput.OnInteractionHandler -= GameInput_OnInteractionHandler;
     }
 
     private void GameInput_OnInteractionHandler(object sender, System.EventArgs e)
     {
-        Debug.Log("Interaction started");
+        //Debug.Log("Interaction started");
         HandleInteraction();
     }
 
     private void HandleInteraction()
     {
         RaycastHit rayHit;
-        Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = playerCamera.ScreenPointToRay(new Vector3(0.5f, 0.5f));
 
         if (Physics.Raycast(ray,
                             out rayHit,
@@ -50,6 +51,14 @@ public class FPInteraction : MonoBehaviour
             if (note != null)
             {
                 ShowNote(note);
+                return;
+            }
+
+            VHS vhs = rayHit.collider.GetComponentInParent<VHS>();
+
+            if(vhs != null)
+            {
+                gameLogic.ActivateThirdPersonCamera();
                 return;
             }
         }

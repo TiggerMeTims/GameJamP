@@ -16,7 +16,7 @@ public class FPMouseLook : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector2 mouseInput = GameInput.Instance.GetLookVector();
+        Vector2 mouseInput = gameInput.Instance.GetLookVector();
 
         float mouseX = mouseInput.x * mouseSensitivity * Time.deltaTime;
         float mousey = mouseInput.y * mouseSensitivity * Time.deltaTime;

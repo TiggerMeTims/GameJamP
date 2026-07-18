@@ -15,7 +15,7 @@ public class FPController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        Vector2 input = GameInput.Instance.GetMovementVectorNormalized();
+        Vector2 input = gameInput.Instance.GetMovementVectorNormalized();
 
         Vector3 move = transform.right * input.x + transform.forward * input.y;
 

@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class GameInput : MonoBehaviour
+public class gameInput : MonoBehaviour
 {
-    public static GameInput Instance { get; private set; }
+    public static gameInput Instance { get; private set; }
 
     private const string PLAYER_BINGINGS_PREFS = "InputBindings";
 
