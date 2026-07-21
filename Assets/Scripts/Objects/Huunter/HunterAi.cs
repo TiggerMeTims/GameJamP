@@ -20,6 +20,7 @@ public class HunterAI : MonoBehaviour
 
     private NavMeshAgent agent;
     private float wanderTimer;
+    private float distance;
 
 
     [Header("Audio")]
@@ -27,22 +28,25 @@ public class HunterAI : MonoBehaviour
     [SerializeField] private AudioClip audioClipChase;
     [SerializeField] private AudioClip audioClipWander;
 
-    void Start()
+    private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         wanderTimer = wanderDelay;
+
 
         Debug.Log("Agent enabled: " + agent.enabled);
         Debug.Log("Is on NavMesh: " + agent.isOnNavMesh);
         Debug.Log("Path Status: " + agent.pathStatus);
     }
 
-    void Update()
+    private void FixedUpdate()
     {
         if (player == null)
             return;
 
-        float distance = Vector3.Distance(transform.position, player.position);
+        distance = Vector3.Distance(transform.position, player.position);
+
+        //Debug.Log(distance);
 
         if (distance <= detectionRange)
         {
@@ -54,9 +58,13 @@ public class HunterAI : MonoBehaviour
 
             if (playerController != null)
             {
-                audioController.StopAudioSource();
-                audioController.audioFile = audioClipChase;
-                audioController.PlayAudioFile();
+                if(audioController.audioFile != audioClipChase)
+                {
+                    audioController.StopAudioSource();
+                    audioController.audioFile = audioClipChase;
+                    audioController.PlayAudioFile();
+                }
+
                 // 0 = edge of range, 1 = touching hunter
                 float closeness = 1f - (distance / detectionRange);
 
@@ -74,13 +82,13 @@ public class HunterAI : MonoBehaviour
         }
         else
         {
-            /*
-            if(!audioController.GetAudioSource().isPlaying)
+            if( audioController.audioFile != audioClipWander)
             {
+                audioController.StopAudioSource();
                 audioController.audioFile = audioClipWander;
                 audioController.PlayAudioFile();
             }
-            */
+            
             wanderTimer += Time.deltaTime;
 
             if (wanderTimer >= wanderDelay)
@@ -91,7 +99,7 @@ public class HunterAI : MonoBehaviour
         }
     }
 
-    void Wander()
+    private void Wander()
     {
         Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
         randomDirection += transform.position;

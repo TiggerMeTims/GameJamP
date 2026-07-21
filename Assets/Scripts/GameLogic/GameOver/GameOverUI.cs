@@ -13,7 +13,6 @@ public class GameOverUI : MonoBehaviour
     {
         if(Instance != null)
         {
-            Debug.Log("Lots");
             Destroy(gameObject);
             return;
         }

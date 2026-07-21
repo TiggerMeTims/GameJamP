@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class FPInteraction : MonoBehaviour
 {
     [SerializeField] private Camera playerCamera;
-    [SerializeField] private float interactionDistance = 3f;
+    [SerializeField] private float interactionDistance = 100f;
     [SerializeField] private gameInput gameInput;
 
     [Header("UI")]
@@ -13,8 +13,9 @@ public class FPInteraction : MonoBehaviour
     [SerializeField] private GameObject canvas;
     [SerializeField] private GameLogic gameLogic;
 
-
     private Note notes;
+
+    private bool hasVHS;
 
     private void Start()
     {
@@ -22,6 +23,11 @@ public class FPInteraction : MonoBehaviour
 
         TextAsset jsonFile = Resources.Load<TextAsset>("GameScript");
         notes = JsonUtility.FromJson<Note>(jsonFile.text);
+    }
+
+    private void OnEnable()
+    {
+        hasVHS = false;
     }
 
     private void OnDestroy()
@@ -39,7 +45,9 @@ public class FPInteraction : MonoBehaviour
     private void HandleInteraction()
     {
         RaycastHit rayHit;
-        Ray ray = playerCamera.ScreenPointToRay(new Vector3(0.5f, 0.5f));
+        Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height /2f, 0f));
+
+        Debug.DrawRay(ray.origin, ray.direction * interactionDistance, Color.red);
 
         if (Physics.Raycast(ray,
                             out rayHit,
@@ -58,10 +66,30 @@ public class FPInteraction : MonoBehaviour
 
             if(vhs != null)
             {
+                if(!hasVHS)
+                {
+                    vhs.HandleInteraction(canvas, canvasText); 
+                    return;
+                }
                 gameLogic.ActivateThirdPersonCamera();
                 return;
             }
+
+            VHSObject vhsTape = rayHit.collider.GetComponent<VHSObject>();
+            Debug.Log(vhsTape);
+            if(vhsTape != null)
+            {
+                vhsTape.Interacted();
+                HandleVHSInteraction();
+                return;
+            }
         }
+    }
+
+
+    private void HandleVHSInteraction()
+    {
+        hasVHS = true;
     }
     
     
@@ -89,6 +117,6 @@ public class FPInteraction : MonoBehaviour
             notes.Notes[note.GetNoteType()].ContainsLine3;
             
             Time.timeScale = 0f;
+        }
     }
-}
 }

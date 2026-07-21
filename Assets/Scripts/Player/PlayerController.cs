@@ -11,9 +11,10 @@ public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance { get; private set; }
 
-    [SerializeField] private float moveSpeed = 5.0f;
+    private float moveSpeed = 20.0f;
     [SerializeField] private gameInput gameInput;
     [SerializeField] private Camera playerCamera;
+    [SerializeField] private GameLogic gameLogic;
 
     [Header("Insanity")]
     [SerializeField] private float maxInsanity = 100f;
@@ -38,8 +39,16 @@ public class PlayerController : MonoBehaviour
     
     [SerializeField] private TMP_Text canvasText;
     [SerializeField] private GameObject canvas;
+
+    /// <summary>
+    /// Checks for the hunter scripts
+    /// </summary>
+    private static string __HUNTERWHEELCHAIR__ = "WHEELCHAIR";
+    private static string __HUNTERFINAL__ = "FINAL";
     //-----------------------------------------------------------------------------------------------------------------------\\
     private Note notes;
+    //this is for loading objects into the starting scene
+    private int objectNumber = 0;
 
     private void Awake()
     {
@@ -71,7 +80,7 @@ public class PlayerController : MonoBehaviour
         HandleInteractions();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (interactionCooldown > 0)
         {
@@ -196,7 +205,7 @@ public class PlayerController : MonoBehaviour
             5f
         );
 
-        Debug.Log(rayDirection);
+        //Debug.Log(rayDirection);
 
         if (Physics.Raycast(
             rayOrigin,
@@ -284,10 +293,21 @@ public class PlayerController : MonoBehaviour
     private void HandleKeycardInteraction(KeycardObject keycardObject)
     {
         if (keycardObject.GetKeycardType() == __CHECK_RED_KEYCARD)
+        {
             hasRedKeycard = true;
+            gameLogic.ActivateFirstPersonCamera();
+            gameLogic.ActivateHunter(hasRedKeycard, __HUNTERWHEELCHAIR__);
+            gameLogic.StartingActivateObjects(objectNumber);
+            objectNumber++;
+        }
 
         if (keycardObject.GetKeycardType() == __CHECK_BLUE_KEYCARD)
+        {
             hasBlueKeycard = true;
+            gameLogic.ActivateFirstPersonCamera();
+            gameLogic.ActivateHunter(hasRedKeycard, __HUNTERFINAL__);
+            gameLogic.StartingActivateObjects(objectNumber);
+        }
 
         if (keycardObject.GetKeycardType() == __CHECK_YELLOW_KEYCARD)
             hasYellowKeycard = true;
@@ -319,7 +339,7 @@ public class PlayerController : MonoBehaviour
         currentInsanity -= damage;
         currentInsanity = Mathf.Clamp(currentInsanity, 0f, maxInsanity);
 
-        Debug.Log("Insanity: " + currentInsanity);
+        //Debug.Log("Insanity: " + currentInsanity);
 
         if (currentInsanity <= 0)
         {
@@ -329,7 +349,7 @@ public class PlayerController : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log("Player Died");
+        //Debug.Log("Player Died");
 
         // Disable movement
         enabled = false;
@@ -345,5 +365,10 @@ public class PlayerController : MonoBehaviour
     public float GetInsanityPercent()
     {
         return currentInsanity / maxInsanity;
+    }
+
+    public void SetMoveSpeed(float newMoveSpeed)
+    {
+        moveSpeed = newMoveSpeed;
     }
 }
