@@ -11,9 +11,8 @@ public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance { get; private set; }
 
-    private float moveSpeed = 20.0f;
+    private float moveSpeed = 10.0f;
     [SerializeField] private gameInput gameInput;
-    [SerializeField] private Camera playerCamera;
     [SerializeField] private GameLogic gameLogic;
 
     [Header("Insanity")]
@@ -73,6 +72,17 @@ public class PlayerController : MonoBehaviour
 
         //Debug.Log(notes.Notes[0].ContainsLine1);
 
+    }
+
+    private void OnDisable()
+    {
+        gameLogic.DisableHunter(__HUNTERWHEELCHAIR__);
+    }
+
+    private void OnEnable()
+    {
+        gameLogic.ActivateHunter(hasRedKeycard, __HUNTERWHEELCHAIR__);
+        gameLogic.ActivateHunter(hasBlueKeycard, __HUNTERFINAL__);
     }
 
     private void GameInput_OnInteractionHandler(object sender, System.EventArgs e)
@@ -220,7 +230,6 @@ public class PlayerController : MonoBehaviour
 
             if (doorObject != null)
             {
-                //Debug.Log("called");
                 interactionCooldown = 0.25f;
                 doorObject.Interaction(this);
                 return;
@@ -296,7 +305,7 @@ public class PlayerController : MonoBehaviour
         {
             hasRedKeycard = true;
             gameLogic.ActivateFirstPersonCamera();
-            gameLogic.ActivateHunter(hasRedKeycard, __HUNTERWHEELCHAIR__);
+            //gameLogic.ActivateHunter(hasRedKeycard, __HUNTERWHEELCHAIR__);
             gameLogic.StartingActivateObjects(objectNumber);
             objectNumber++;
         }
@@ -305,7 +314,7 @@ public class PlayerController : MonoBehaviour
         {
             hasBlueKeycard = true;
             gameLogic.ActivateFirstPersonCamera();
-            gameLogic.ActivateHunter(hasRedKeycard, __HUNTERFINAL__);
+            //gameLogic.ActivateHunter(hasRedKeycard, __HUNTERFINAL__);
             gameLogic.StartingActivateObjects(objectNumber);
         }
 
@@ -339,8 +348,6 @@ public class PlayerController : MonoBehaviour
         currentInsanity -= damage;
         currentInsanity = Mathf.Clamp(currentInsanity, 0f, maxInsanity);
 
-        //Debug.Log("Insanity: " + currentInsanity);
-
         if (currentInsanity <= 0)
         {
             Die();
@@ -349,8 +356,6 @@ public class PlayerController : MonoBehaviour
 
     private void Die()
     {
-        //Debug.Log("Player Died");
-
         // Disable movement
         enabled = false;
 

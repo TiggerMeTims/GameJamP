@@ -13,6 +13,7 @@ public class GameFinished : MonoBehaviour
         if(Instance != null)
         {
             Destroy(gameObject);
+            Debug.Log("More then one GameFinished Script");
             return;
         }
         Instance = this;

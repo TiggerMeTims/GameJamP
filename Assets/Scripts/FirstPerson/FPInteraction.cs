@@ -13,6 +13,10 @@ public class FPInteraction : MonoBehaviour
     [SerializeField] private GameObject canvas;
     [SerializeField] private GameLogic gameLogic;
 
+    [Header("Music")]
+    [SerializeField] private PlayAudio audioSource;
+    [SerializeField] private AudioClip audioClip;
+
     private Note notes;
 
     private bool hasVHS;
@@ -28,6 +32,12 @@ public class FPInteraction : MonoBehaviour
     private void OnEnable()
     {
         hasVHS = false;
+        if(audioSource.audioFile != audioClip)
+        {
+            audioSource.StopAudioSource();
+            audioSource.audioFile = audioClip;
+            audioSource.PlayAudioFile();
+        }
     }
 
     private void OnDestroy()

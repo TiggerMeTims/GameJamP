@@ -14,6 +14,7 @@ public class GameOverUI : MonoBehaviour
         if(Instance != null)
         {
             Destroy(gameObject);
+            Debug.Log("More then one GameOverUI sctipt loaded");
             return;
         }
         Instance = this;

@@ -67,6 +67,14 @@ public class GameLogic : MonoBehaviour
         
     }
 
+    public void DisableHunter(string hunterType)
+    {
+        if(hunterType == __HUNTERWHEELCHAIR__)
+        {
+            wheelchairHunter.SetActive(false);
+        }
+    }
+
     public void StartingActivateObjects(int objectNumber)
     {
         if(objectNumber == 0)
