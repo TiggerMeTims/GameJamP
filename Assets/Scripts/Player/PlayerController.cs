@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance { get; private set; }
 
+    private Animator mAnimator; 
+
     private float moveSpeed = 10.0f;
     [SerializeField] private gameInput gameInput;
     [SerializeField] private GameLogic gameLogic;
@@ -44,6 +46,8 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private static string __HUNTERWHEELCHAIR__ = "WHEELCHAIR";
     private static string __HUNTERFINAL__ = "FINAL";
+
+    private static string __ANIMATION_NAME__ = "isWalking";
     //-----------------------------------------------------------------------------------------------------------------------\\
     private Note notes;
     //this is for loading objects into the starting scene
@@ -70,6 +74,8 @@ public class PlayerController : MonoBehaviour
 
         notes = JsonUtility.FromJson<Note>(jsonFile.text);
 
+        mAnimator = GetComponentInChildren<Animator>();
+
         //Debug.Log(notes.Notes[0].ContainsLine1);
 
     }
@@ -90,7 +96,7 @@ public class PlayerController : MonoBehaviour
         HandleInteractions();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (interactionCooldown > 0)
         {
@@ -177,15 +183,24 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+
+        if(moveDirection == Vector3.zero)
+        {
+            mAnimator.ResetTrigger(__ANIMATION_NAME__);
+        }
+
         if (moveDirection != Vector3.zero)
         {
+            mAnimator.SetTrigger(__ANIMATION_NAME__);
             transform.position += moveDirection * moveDistance;
         }
+
 
         isWalking = moveDirection != Vector3.zero;
 
         if (moveDirection != Vector3.zero)
         {
+            //mAnimator.SetTrigger("toWalking");
             float rotationSpeed = 10f;
 
             transform.forward = Vector3.Slerp(
