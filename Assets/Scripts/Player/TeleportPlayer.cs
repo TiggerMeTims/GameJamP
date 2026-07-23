@@ -3,6 +3,8 @@ using UnityEngine;
 public class TeleportPlayer : MonoBehaviour
 {
 
+    public static TeleportPlayer Instance {get; private set;}
+
     //[SerializeField] private Transform PlayerLocation;
     [SerializeField] private Transform TargetLocation;
 

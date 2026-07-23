@@ -7,7 +7,7 @@ public class GameLogic : MonoBehaviour
     [SerializeField] private GameObject sanityMeter;
     [SerializeField] private GameObject firstPersonPlayer;
     [Header("AI")]
-    [SerializeField] private GameObject wheelchairHunter;
+    [SerializeField] private GameObject wheelchairHunterFirst;
     [SerializeField] private GameObject finalHunter;
     [Header("VHS Objects")]
     [SerializeField] private GameObject vhsTape1;
@@ -24,7 +24,7 @@ public class GameLogic : MonoBehaviour
     private void Awake()
     {
         finalHunter.SetActive(false);
-        wheelchairHunter.SetActive(false);
+        wheelchairHunterFirst.SetActive(false);
         vhsTape1.SetActive(false);
         vhsTape2.SetActive(false);
         startingWheelChair.SetActive(false);
@@ -57,7 +57,7 @@ public class GameLogic : MonoBehaviour
     {
         if(keyCard && hunterType == __HUNTERWHEELCHAIR__)
         {
-            wheelchairHunter.SetActive(true);
+            wheelchairHunterFirst.SetActive(true);
         }
 
         if(keyCard && hunterType == __HUNTERFINAL__)
@@ -71,7 +71,7 @@ public class GameLogic : MonoBehaviour
     {
         if(hunterType == __HUNTERWHEELCHAIR__)
         {
-            wheelchairHunter.SetActive(false);
+            wheelchairHunterFirst.SetActive(false);
         }
     }
 

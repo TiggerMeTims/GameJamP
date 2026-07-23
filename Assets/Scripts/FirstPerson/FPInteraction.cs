@@ -14,7 +14,7 @@ public class FPInteraction : MonoBehaviour
     [SerializeField] private GameLogic gameLogic;
 
     [Header("Music")]
-    [SerializeField] private PlayAudio audioSource;
+    [SerializeField] private PlayAudio musicSource;
     [SerializeField] private AudioClip audioClip;
 
     private Note notes;
@@ -32,11 +32,11 @@ public class FPInteraction : MonoBehaviour
     private void OnEnable()
     {
         hasVHS = false;
-        if(audioSource.audioFile != audioClip)
+        if(musicSource.audioFile != audioClip)
         {
-            audioSource.StopAudioSource();
-            audioSource.audioFile = audioClip;
-            audioSource.PlayAudioFile();
+            musicSource.StopAudioSource();
+            musicSource.audioFile = audioClip;
+            musicSource.PlayAudioFile();
         }
     }
 

@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     private float moveSpeed = 10.0f;
     [SerializeField] private gameInput gameInput;
     [SerializeField] private GameLogic gameLogic;
+    [Header("GameObejects")]
+    [SerializeField] private GameObject wheelchairGameObject;
 
     [Header("Insanity")]
     [SerializeField] private float maxInsanity = 100f;
@@ -29,6 +31,7 @@ public class PlayerController : MonoBehaviour
     private bool hasRedKeycard = false;
     private bool hasBlueKeycard = false;
     private bool hasYellowKeycard = false;
+    private bool staticLoopManager = false;
 
     private static string __CHECK_RED_KEYCARD = "RedKeyCard";
     private static string __CHECK_BLUE_KEYCARD = "BlueKeyCard";
@@ -48,6 +51,14 @@ public class PlayerController : MonoBehaviour
     private static string __HUNTERFINAL__ = "FINAL";
 
     private static string __ANIMATION_NAME__ = "isWalking";
+
+    [Header("VHS Audio")]
+    [SerializeField] private AudioSource staticClipManager;
+    [SerializeField] private AudioClip vhsSoundEffect;
+
+    [Header("Walking Audio")]
+    [SerializeField] private AudioSource walkingClipManager;
+    [SerializeField] private AudioClip walkingClip;
     //-----------------------------------------------------------------------------------------------------------------------\\
     private Note notes;
     //this is for loading objects into the starting scene
@@ -83,12 +94,24 @@ public class PlayerController : MonoBehaviour
     private void OnDisable()
     {
         gameLogic.DisableHunter(__HUNTERWHEELCHAIR__);
+
+        //Disableing the audio
+        //----------------------------------------------------------------------------------------\\
+        if(PlayClipSounds.Instance != null)
+            PlayClipSounds.Instance.StopAudio(staticClipManager);
+        //----------------------------------------------------------------------------------------\\
     }
 
     private void OnEnable()
     {
         gameLogic.ActivateHunter(hasRedKeycard, __HUNTERWHEELCHAIR__);
         gameLogic.ActivateHunter(hasBlueKeycard, __HUNTERFINAL__);
+
+        //Enabling the VHS sound effect
+        //----------------------------------------------------------------------------------------\\
+        if(PlayClipSounds.Instance != null)
+            PlayClipSounds.Instance.PlayAudio(staticClipManager, vhsSoundEffect, true);
+        //----------------------------------------------------------------------------------------\\
     }
 
     private void GameInput_OnInteractionHandler(object sender, System.EventArgs e)
@@ -187,12 +210,16 @@ public class PlayerController : MonoBehaviour
         if(moveDirection == Vector3.zero)
         {
             mAnimator.ResetTrigger(__ANIMATION_NAME__);
+            if(PlayClipSounds.Instance != null)
+                PlayClipSounds.Instance.StopAudio(walkingClipManager);
         }
 
         if (moveDirection != Vector3.zero)
         {
             mAnimator.SetTrigger(__ANIMATION_NAME__);
             transform.position += moveDirection * moveDistance;
+            if(PlayClipSounds.Instance != null)
+                PlayClipSounds.Instance.PlayAudio(walkingClipManager, walkingClip, true);
         }
 
 
@@ -274,10 +301,10 @@ public class PlayerController : MonoBehaviour
 
     public void MovePlayerToNewPosition(Transform movePlayer)
     {
-        StartCoroutine(TeleportPlayer(movePlayer));
+        StartCoroutine(TeleportPlayerController(movePlayer));
     }
 
-    private IEnumerator TeleportPlayer(Transform movePlayer)
+    private IEnumerator TeleportPlayerController(Transform movePlayer)
     {
         isTeleporting = true;
 
@@ -318,6 +345,7 @@ public class PlayerController : MonoBehaviour
     {
         if (keycardObject.GetKeycardType() == __CHECK_RED_KEYCARD)
         {
+            wheelchairGameObject.SetActive(false);
             hasRedKeycard = true;
             gameLogic.ActivateFirstPersonCamera();
             //gameLogic.ActivateHunter(hasRedKeycard, __HUNTERWHEELCHAIR__);
@@ -335,6 +363,11 @@ public class PlayerController : MonoBehaviour
 
         if (keycardObject.GetKeycardType() == __CHECK_YELLOW_KEYCARD)
             hasYellowKeycard = true;
+        
+        if(!hasYellowKeycard)
+        {
+            keycardObject.PlayEjectSound();
+        }
     }
 
     private void HandleNoteInteractions(NoteObject noteObject)
