@@ -59,6 +59,9 @@ public class PlayerController : MonoBehaviour
     [Header("Walking Audio")]
     [SerializeField] private AudioSource walkingClipManager;
     [SerializeField] private AudioClip walkingClip;
+    [Header("Music")]
+    [SerializeField] private AudioSource musicSource;
+    [SerializeField] private AudioClip musicClip;
     //-----------------------------------------------------------------------------------------------------------------------\\
     private Note notes;
     //this is for loading objects into the starting scene
@@ -112,6 +115,14 @@ public class PlayerController : MonoBehaviour
         //----------------------------------------------------------------------------------------\\
         if(PlayClipSounds.Instance != null)
             PlayClipSounds.Instance.PlayAudio(staticClipManager, vhsSoundEffect, true);
+        //----------------------------------------------------------------------------------------\\
+        //Playing the correct music track
+        //----------------------------------------------------------------------------------------\\
+        if(hasRedKeycard)
+        {
+            if(musicSource != null)
+                PlayClipSounds.Instance.PlayAudio(musicSource, musicClip, true);
+        }
         //----------------------------------------------------------------------------------------\\
     }
 
