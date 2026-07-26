@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
 
     private float interactionCooldown = 0f;
 
-    private bool hasRedKeycard = false;
+    public bool hasRedKeycard = false;
     private bool hasBlueKeycard = false;
     private bool hasYellowKeycard = false;
     private bool staticLoopManager = false;
@@ -104,7 +104,8 @@ public class PlayerController : MonoBehaviour
 
     private void OnEnable()
     {
-        gameLogic.ActivateHunter(hasRedKeycard, __HUNTERWHEELCHAIR__);
+        if(!hasBlueKeycard)
+            gameLogic.ActivateHunter(hasRedKeycard, __HUNTERWHEELCHAIR__);
         gameLogic.ActivateHunter(hasBlueKeycard, __HUNTERFINAL__);
 
         //Enabling the VHS sound effect

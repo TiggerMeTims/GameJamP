@@ -24,9 +24,8 @@ public class HunterAI : MonoBehaviour
 
 
     [Header("Audio")]
-    [SerializeField] private PlayAudio audioController;
+    [SerializeField] private AudioSource audioController;
     [SerializeField] private AudioClip audioClipChase;
-    [SerializeField] private AudioClip audioClipWander;
 
     private void Start()
     {
@@ -58,12 +57,8 @@ public class HunterAI : MonoBehaviour
 
             if (playerController != null)
             {
-                if(audioController.audioFile != audioClipChase)
-                {
-                    audioController.StopAudioSource();
-                    audioController.audioFile = audioClipChase;
-                    audioController.PlayAudioFile();
-                }
+                if(audioController != null)
+                    PlayClipSounds.Instance.PlayAudio(audioController, audioClipChase, true);
 
                 // 0 = edge of range, 1 = touching hunter
                 float closeness = 1f - (distance / detectionRange);
@@ -81,14 +76,7 @@ public class HunterAI : MonoBehaviour
             }
         }
         else
-        {
-            if( audioController.audioFile != audioClipWander)
-            {
-                audioController.StopAudioSource();
-                audioController.audioFile = audioClipWander;
-                audioController.PlayAudioFile();
-            }
-            
+        {   
             wanderTimer += Time.deltaTime;
 
             if (wanderTimer >= wanderDelay)

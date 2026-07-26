@@ -3,12 +3,20 @@ using TMPro;
 
 public class DoorObject : DoorInteractions
 {
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip audioClip;
+    [Header("Hunter and Canvas")]
     [SerializeField] private Transform doorOpenLocation;
     [SerializeField] private GameObject hunterAI;
     [SerializeField] private GameObject canvas;
     [SerializeField] private TMP_Text canvasText;
+    [Header("Final Hunter AI")]
+    [SerializeField] private GameObject finalHunter;
+    [SerializeField] private GameObject finalHunterNewPosition;
     private static string errorMessage = "You have not collected the required keycard for this area \n\n Press E to Continue";
     private static string __REQUIREDKEYCARD__ = "YellowKeyCard";
+
 
     public override void Interaction(PlayerController player)
     {
@@ -22,6 +30,16 @@ public class DoorObject : DoorInteractions
                 PlayerController.Instance.SetMoveSpeed(0f);
             }
             player.MovePlayerToNewPosition(doorOpenLocation);
+            if(audioSource != null)
+            {
+                if(PlayerController.Instance.hasRedKeycard)
+                    PlayClipSounds.Instance.PlayAudio(audioSource, audioClip, true);
+            }
+            if(finalHunter != null && finalHunter.activeInHierarchy)
+            {
+                Debug.Log("Door Call");
+                MoveObject.Instance.MoveHunterPosition(finalHunter, finalHunterNewPosition);
+            }
         }
         else
         {
