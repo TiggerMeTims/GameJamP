@@ -10,6 +10,7 @@ public class gameInput : MonoBehaviour
 
     private Inputs playerInputActions;
     public event EventHandler OnInteractionHandler;
+    public event EventHandler OnExitGameHandler;
 
     public void Awake()
     {
@@ -18,6 +19,7 @@ public class gameInput : MonoBehaviour
         playerInputActions.Player.Enable();
 
         playerInputActions.Player.Interaction.performed += Interact_performed;
+        playerInputActions.Player.ExitGame.performed += ExitGame_performed;
     }
 
     private void OnDestroy()
@@ -28,6 +30,11 @@ public class gameInput : MonoBehaviour
     private void Interact_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
         OnInteractionHandler?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void ExitGame_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        OnExitGameHandler?.Invoke(this, EventArgs.Empty);
     }
 
     public Vector2 GetMovementVectorNormalized()

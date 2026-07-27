@@ -24,6 +24,7 @@ public class FPInteraction : MonoBehaviour
     private void Start()
     {
         gameInput.OnInteractionHandler += GameInput_OnInteractionHandler;
+        gameInput.OnExitGameHandler += GameInput_OnExitGameHandler;
 
         TextAsset jsonFile = Resources.Load<TextAsset>("GameScript");
         notes = JsonUtility.FromJson<Note>(jsonFile.text);
@@ -46,6 +47,11 @@ public class FPInteraction : MonoBehaviour
     {
         //Debug.Log("Interaction started");
         HandleInteraction();
+    }
+
+    private void GameInput_OnExitGameHandler(object sender, System.EventArgs e)
+    {
+        ExitGame();
     }
 
     private void HandleInteraction()
@@ -124,5 +130,10 @@ public class FPInteraction : MonoBehaviour
             
             Time.timeScale = 0f;
         }
+    }
+
+    private void ExitGame()
+    {
+        Application.Quit();
     }
 }

@@ -136,6 +136,15 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ExitGame"",
+                    ""type"": ""Button"",
+                    ""id"": ""3db032fa-bda6-4bb8-a781-d94e25c947d6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -248,6 +257,17 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8c66266f-9a51-4899-8934-d98fe6c2e724"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ExitGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -261,6 +281,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_Player_MoveBackward = m_Player.FindAction("MoveBackward", throwIfNotFound: true);
         m_Player_Interaction = m_Player.FindAction("Interaction", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
+        m_Player_ExitGame = m_Player.FindAction("ExitGame", throwIfNotFound: true);
     }
 
     ~@Inputs()
@@ -346,6 +367,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_MoveBackward;
     private readonly InputAction m_Player_Interaction;
     private readonly InputAction m_Player_Look;
+    private readonly InputAction m_Player_ExitGame;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -377,6 +399,10 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Look".
         /// </summary>
         public InputAction @Look => m_Wrapper.m_Player_Look;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ExitGame".
+        /// </summary>
+        public InputAction @ExitGame => m_Wrapper.m_Player_ExitGame;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -418,6 +444,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @ExitGame.started += instance.OnExitGame;
+            @ExitGame.performed += instance.OnExitGame;
+            @ExitGame.canceled += instance.OnExitGame;
         }
 
         /// <summary>
@@ -444,6 +473,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @ExitGame.started -= instance.OnExitGame;
+            @ExitGame.performed -= instance.OnExitGame;
+            @ExitGame.canceled -= instance.OnExitGame;
         }
 
         /// <summary>
@@ -519,5 +551,12 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLook(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ExitGame" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnExitGame(InputAction.CallbackContext context);
     }
 }

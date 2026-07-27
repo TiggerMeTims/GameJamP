@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviour
     public bool hasRedKeycard = false;
     private bool hasBlueKeycard = false;
     private bool hasYellowKeycard = false;
-    private bool staticLoopManager = false;
+    public bool playerInFinalScene = false;
 
     private static string __CHECK_RED_KEYCARD = "RedKeyCard";
     private static string __CHECK_BLUE_KEYCARD = "BlueKeyCard";
@@ -82,6 +82,7 @@ public class PlayerController : MonoBehaviour
     {
         currentInsanity = maxInsanity;
         gameInput.OnInteractionHandler += GameInput_OnInteractionHandler;
+        gameInput.OnExitGameHandler += GameInput_OnExitGameHandler;
 
         //GameScript Call
         TextAsset jsonFile = Resources.Load<TextAsset>("GameScript");
@@ -131,6 +132,12 @@ public class PlayerController : MonoBehaviour
         HandleInteractions();
     }
 
+    private void GameInput_OnExitGameHandler(object sender, System.EventArgs e)
+    {
+        if(!playerInFinalScene)
+            ExitGame();
+    }
+
     private void Update()
     {
         if (interactionCooldown > 0)
@@ -148,105 +155,108 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (isTeleporting)
-            return;
-
-        if (interactionCooldown > 0)
-            return;
-
-        Vector2 inputVector = gameInput.GetMovementVectorNormalized();
-
-        Vector3 moveDirection = new Vector3(
-            inputVector.x,
-            0,
-            inputVector.y
-        );
-
-        float moveDistance = moveSpeed * Time.deltaTime;
-
-        float playerRadius = 0.7f;
-        float playerHeight = 2f;
-
-        bool canMove = !Physics.CapsuleCast(
-            transform.position,
-            transform.position + Vector3.up * playerHeight,
-            playerRadius,
-            moveDirection,
-            moveDistance
-        );
-
-        if (!canMove)
+        if(!playerInFinalScene)
         {
-            Vector3 moveDirX = new Vector3(moveDirection.x, 0, 0).normalized;
+            if (isTeleporting)
+                return;
 
-            bool canMoveX =
-                moveDirection.x != 0 &&
-                !Physics.CapsuleCast(
-                    transform.position,
-                    transform.position + Vector3.up * playerHeight,
-                    playerRadius,
-                    moveDirX,
-                    moveDistance
-                );
+            if (interactionCooldown > 0)
+                return;
 
-            if (canMoveX)
+            Vector2 inputVector = gameInput.GetMovementVectorNormalized();
+
+            Vector3 moveDirection = new Vector3(
+                inputVector.x,
+                0,
+                inputVector.y
+            );
+
+            float moveDistance = moveSpeed * Time.deltaTime;
+
+            float playerRadius = 0.7f;
+            float playerHeight = 2f;
+
+            bool canMove = !Physics.CapsuleCast(
+                transform.position,
+                transform.position + Vector3.up * playerHeight,
+                playerRadius,
+                moveDirection,
+                moveDistance
+            );
+
+            if (!canMove)
             {
-                moveDirection = moveDirX;
-            }
-            else
-            {
-                Vector3 moveDirZ = new Vector3(0, 0, moveDirection.z).normalized;
+                Vector3 moveDirX = new Vector3(moveDirection.x, 0, 0).normalized;
 
-                bool canMoveZ =
-                    moveDirection.z != 0 &&
+                bool canMoveX =
+                    moveDirection.x != 0 &&
                     !Physics.CapsuleCast(
                         transform.position,
                         transform.position + Vector3.up * playerHeight,
                         playerRadius,
-                        moveDirZ,
+                        moveDirX,
                         moveDistance
                     );
 
-                if (canMoveZ)
+                if (canMoveX)
                 {
-                    moveDirection = moveDirZ;
+                    moveDirection = moveDirX;
                 }
                 else
                 {
-                    moveDirection = Vector3.zero;
+                    Vector3 moveDirZ = new Vector3(0, 0, moveDirection.z).normalized;
+
+                    bool canMoveZ =
+                        moveDirection.z != 0 &&
+                        !Physics.CapsuleCast(
+                            transform.position,
+                            transform.position + Vector3.up * playerHeight,
+                            playerRadius,
+                            moveDirZ,
+                            moveDistance
+                        );
+
+                    if (canMoveZ)
+                    {
+                        moveDirection = moveDirZ;
+                    }
+                    else
+                    {
+                        moveDirection = Vector3.zero;
+                    }
                 }
             }
-        }
 
 
-        if(moveDirection == Vector3.zero)
-        {
-            mAnimator.ResetTrigger(__ANIMATION_NAME__);
-            if(PlayClipSounds.Instance != null)
-                PlayClipSounds.Instance.StopAudio(walkingClipManager);
-        }
+            if(moveDirection == Vector3.zero)
+            {
+                mAnimator.ResetTrigger(__ANIMATION_NAME__);
+                if(PlayClipSounds.Instance != null)
+                    PlayClipSounds.Instance.StopAudio(walkingClipManager);
+            }
 
-        if (moveDirection != Vector3.zero)
-        {
-            mAnimator.SetTrigger(__ANIMATION_NAME__);
-            transform.position += moveDirection * moveDistance;
-            if(PlayClipSounds.Instance != null)
-                PlayClipSounds.Instance.PlayAudio(walkingClipManager, walkingClip, true);
-        }
+            if (moveDirection != Vector3.zero)
+            {
+                mAnimator.SetTrigger(__ANIMATION_NAME__);
+                transform.position += moveDirection * moveDistance;
+                if(PlayClipSounds.Instance != null)
+                    PlayClipSounds.Instance.PlayAudio(walkingClipManager, walkingClip, true);
+            }
 
 
-        isWalking = moveDirection != Vector3.zero;
+            isWalking = moveDirection != Vector3.zero;
 
-        if (moveDirection != Vector3.zero)
-        {
-            //mAnimator.SetTrigger("toWalking");
-            float rotationSpeed = 10f;
+            if (moveDirection != Vector3.zero)
+            {
+                //mAnimator.SetTrigger("toWalking");
+                float rotationSpeed = 10f;
 
-            transform.forward = Vector3.Slerp(
-                transform.forward,
-                moveDirection,
-                Time.deltaTime * rotationSpeed
-            );
+                transform.forward = Vector3.Slerp(
+                    transform.forward,
+                    moveDirection,
+                    Time.deltaTime * rotationSpeed
+                );
+            }
         }
     }
 
@@ -435,5 +445,10 @@ public class PlayerController : MonoBehaviour
     public void SetMoveSpeed(float newMoveSpeed)
     {
         moveSpeed = newMoveSpeed;
+    }
+
+    private void ExitGame()
+    {
+        Application.Quit();
     }
 }

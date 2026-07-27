@@ -26,8 +26,10 @@ public class DoorObject : DoorInteractions
             if(GetRequiredKeycard() == __REQUIREDKEYCARD__)
             {
                 hunterAI.SetActive(true);
+                PlayerController.Instance.playerInFinalScene = true;
                 Invoke(nameof(CallFinalScene), 10f);
                 PlayerController.Instance.SetMoveSpeed(0f);
+                CameraMovement.Instance.isFinalScene = true;
             }
             player.MovePlayerToNewPosition(doorOpenLocation);
             if(audioSource != null)
@@ -68,6 +70,8 @@ public class DoorObject : DoorInteractions
 
     private void CallFinalScene()
     {
+        if(audioSource != null)
+            PlayClipSounds.Instance.PlayAudio(audioSource, audioClip, true);
         GameFinished.Instance.ChangeToFinalScene();
     }
 }
